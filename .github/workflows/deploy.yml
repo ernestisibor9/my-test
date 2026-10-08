@@ -29,10 +29,10 @@ jobs:
         run: |
           sshpass -p "$SSHPASS" ssh $SSH_OPTS -p "${{ secrets.SSH_PORT }}" \
             "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}" \
-            "mkdir -p /home/nacpkiwb/nacpdean_portal"
+            "mkdir -p /home/nacpkiwb/deploy.nacpdean.org"
 
           sshpass -p "$SSHPASS" scp $SSH_OPTS -P "${{ secrets.SSH_PORT }}" \
             -r ./* \
-            "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/nacpkiwb/nacpdean_portal/"
+            "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/nacpkiwb/deploy.nacpdean.org/"
 
           echo "Deployment completed successfully."
