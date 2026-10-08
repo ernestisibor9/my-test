@@ -1,0 +1,38 @@
+name: Deploy Laravel to Shared Hosting
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  SSH_OPTS: -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PreferredAuthentications=password -o PubkeyAuthentication=no
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Remove git metadata before deploy
+        run: rm -rf .git .github
+
+      - name: Install SSH tools
+        run: sudo apt-get install -y sshpass
+
+      - name: Deploy over SCP
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          sshpass -p "$SSHPASS" ssh $SSH_OPTS -p "${{ secrets.SSH_PORT }}" \
+            "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}" \
+            "mkdir -p /home/nacpkiwb/nacpdean_portal"
+
+          sshpass -p "$SSHPASS" scp $SSH_OPTS -P "${{ secrets.SSH_PORT }}" \
+            -r ./* \
+            "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/nacpkiwb/nacpdean_portal/"
+
+          echo "Deployment completed successfully."
